@@ -4,53 +4,202 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wanted CarBike</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;}
-header{background:#0a2540;color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;}
-header a{color:white;margin-left:15px;text-decoration:none;font-weight:bold;}
-nav.categories{display:flex;gap:15px;padding:10px 30px;background:white;}
-nav.categories a{cursor:pointer;text-decoration:none;padding:6px 12px;border-radius:6px;color:#0a2540;}
-nav.categories a.active{background:#0a2540;color:white;}
-.container{max-width:1200px;margin:20px auto;padding:0 20px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;}
-.card{background:white;border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:0.3s;}
-.card:hover{transform:translateY(-5px);box-shadow:0 6px 18px rgba(0,0,0,0.2);}
-.card img{width:100%;height:160px;object-fit:cover;}
-.card .info{padding:10px;}
-footer{background:#0a2540;color:white;text-align:center;padding:20px;margin-top:50px;}
+/* --- Body & Background --- */
+body{
+  margin:0;
+  padding:0;
+  font-family:'Roboto',sans-serif;
+  color:#333;
+  background: url('Background image.jpeg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Dark overlay for readability */
+body::before{
+  content:"";
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.4);
+  z-index:-1;
+}
+
+/* --- Header --- */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 50px;
+  background: linear-gradient(90deg,#0a2540,#1a3a60);
+  color:white;
+}
+header .logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:24px;
+  font-family:'Montserrat',sans-serif;
+}
+header .logo img{
+  width:50px;
+  height:50px;
+  object-fit:contain;
+  border-radius:6px;
+}
+header .auth-links a{
+  margin-left:20px;
+  font-weight:500;
+  color:white;
+  padding:5px 12px;
+  border-radius:6px;
+  transition:0.3s;
+  text-decoration:none;
+}
+header .auth-links a:hover{
+  background:rgba(255,255,255,0.2);
+  color:#ffd700;
+}
+
+/* --- Categories --- */
+nav.categories{
+  background:white;
+  padding:10px 50px;
+  display:flex;
+  gap:20px;
+  border-bottom:1px solid #ddd;
+}
+nav.categories a{
+  cursor:pointer;
+  font-weight:500;
+  color:#0a2540;
+  padding:6px 12px;
+  border-radius:6px;
+  transition:0.3s;
+  text-decoration:none;
+}
+nav.categories a:hover,
+nav.categories a.active{
+  background:linear-gradient(90deg,#007bff,#00bfff);
+  color:white;
+}
+
+/* --- Container --- */
+.container{
+  max-width:1200px;
+  margin:30px auto;
+  padding:0 20px;
+}
+
+/* --- Ads Grid --- */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
+}
+.card{
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 6px 18px rgba(0,0,0,0.1);
+  cursor:pointer;
+  transition:transform 0.3s, box-shadow 0.3s;
+}
+.card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  transition:transform 0.3s;
+}
+.card:hover img{
+  transform:scale(1.05);
+}
+.card-body{
+  padding:12px;
+}
+.card-body h3{
+  margin:0 0 5px 0;
+  font-family:'Montserrat',sans-serif;
+  font-size:18px;
+}
+.card-body p{
+  margin:0;
+  font-size:14px;
+  color:#555;
+}
+
+/* --- Footer --- */
+footer{
+  background:#0a2540;
+  color:white;
+  padding:25px;
+  text-align:center;
+  margin-top:50px;
+}
+footer a{
+  margin:0 10px;
+  color:white;
+  font-weight:500;
+  transition:0.3s;
+  text-decoration:none;
+}
+footer a:hover{
+  color:#ffd700;
+}
+
+/* --- Responsive --- */
+@media(max-width:768px){
+  nav.categories{flex-wrap:wrap;}
+}
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <header>
-  <div><b>Wanted CarBike</b></div>
-  <div class="auth-links">
+  <div class="logo">
+    <img src="logowbc.jpg" alt="Logo">Wanted CarBike
+  </div>
+  <nav class="auth-links">
     <a href="login.html">Login</a>
     <a href="register.html">Register</a>
-  </div>
+  </nav>
 </header>
 
+<!-- Categories -->
 <nav class="categories">
-  <a class="active" onclick="filterAds('')">All</a>
+  <a onclick="filterAds('')" class="active">All</a>
   <a onclick="filterAds('Car')">Cars</a>
   <a onclick="filterAds('Bike')">Bikes</a>
 </nav>
 
+<!-- Main Container -->
 <div class="container">
   <h2>Available Ads</h2>
-  <div class="grid" id="adsGrid"></div>
+  <div class="grid" id="featuredAds"></div>
 </div>
 
+<!-- Footer -->
 <footer>
-  <p>© 2026 Wanted CarBike</p>
+  <a href="#">Contact Us</a>
+  <a href="#">About Us</a>
+  <a href="#">Privacy Policy</a>
+  <a href="#">Terms & Conditions</a>
 </footer>
 
 <script>
-// ----- AUTH LINKS -----
+// --- Authentication ---
 let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 const authLinks = document.querySelector('.auth-links');
 if(currentUser){
-  authLinks.innerHTML = `<a href="dashboard.html">My Account</a><a href="#" onclick="logout()">Logout</a>`;
+  authLinks.innerHTML = `<a href="dashboard.html">My Account</a><a onclick="logout()" style="cursor:pointer;">Logout</a>`;
 } else {
   authLinks.innerHTML = `<a href="login.html">Login</a><a href="register.html">Register</a>`;
 }
@@ -60,7 +209,7 @@ function logout(){
   window.location.reload();
 }
 
-// ----- FILTER -----
+// --- Filter Ads ---
 let currentFilter = '';
 function filterAds(cat){
   currentFilter = cat;
@@ -69,39 +218,40 @@ function filterAds(cat){
   renderGrid();
 }
 
-// ----- GET ADS -----
-let ads = JSON.parse(localStorage.getItem('ads')) || [];
+// --- Get all ads ---
+function getAllAds(){
+  return JSON.parse(localStorage.getItem('ads')) || [];
+}
 
-// ----- RENDER GRID -----
+// --- Render Ads Grid ---
 function renderGrid(){
-  const container = document.getElementById('adsGrid');
-  container.innerHTML = '';
-  let filtered = ads.filter(a=>!currentFilter || a.category===currentFilter);
-  if(filtered.length===0){
-    container.innerHTML = '<p style="padding:20px;">No ads available.</p>';
+  const container = document.getElementById('featuredAds');
+  container.innerHTML='';
+  let ads = getAllAds().filter(a=>!currentFilter || a.category===currentFilter);
+  if(ads.length===0){
+    container.innerHTML='<p style="padding:20px;color:#fff;">No ads posted yet.</p>';
     return;
   }
-
-  filtered.forEach(ad=>{
-    let card = document.createElement('div');
-    card.className = 'card';
+  ads.forEach(a=>{
+    let card = document.createElement('div'); 
+    card.className='card';
     card.innerHTML = `
-      <img src="${ad.photos[0]}">
-      <div class="info">
-        <h4>${ad.title}</h4>
-        <p><b>Price:</b> ₹${ad.price}</p>
-        <p><b>Location:</b> ${ad.location}</p>
+      <img src="${a.photos[0]}" alt="${a.title}" />
+      <div class="card-body">
+        <h3>${a.title}</h3>
+        <p>${a.price} | ${a.location}</p>
       </div>
     `;
-    card.onclick = ()=>{
-      // Navigate to ad.html with id
-      window.location.href = `ad.html?id=${ad.id}`;
-    }
+    // Open ad on click
+    card.addEventListener('click',()=>{
+      localStorage.setItem('viewAd', JSON.stringify(a));
+      window.open('ad-view.html','_blank');
+    });
     container.appendChild(card);
   });
 }
 
-// INITIAL RENDER
+// Initial render
 renderGrid();
 </script>
 
