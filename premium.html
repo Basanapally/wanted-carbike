@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Upgrade to Premium | Wanted CarBike</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
+.container{max-width:500px;margin:50px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+h2{text-align:center;}
+button{width:100%;padding:10px;margin-top:15px;background:#0a2540;color:white;border:none;border-radius:5px;cursor:pointer;}
+button:hover{opacity:0.9;}
+.payment-option{border:1px solid #ccc;padding:10px;margin-top:10px;border-radius:5px;cursor:pointer;}
+.payment-option:hover{background:#f0f0f0;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Upgrade to Premium</h2>
+  <p>Get unlimited photo uploads and full seller contact access. <br>Price: ₹99 / 28 days</p>
+
+  <div class="payment-option" onclick="pay('Credit/Debit Card')">Credit/Debit Card</div>
+  <div class="payment-option" onclick="pay('UPI Payment')">UPI Payment</div>
+  <div class="payment-option" onclick="pay('QR Code Payment')">QR Code Payment</div>
+</div>
+
+<script>
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+let users = JSON.parse(localStorage.getItem("users")) || [];
+
+if(!currentUser){
+  alert("Please login first");
+  location.href="login.html";
+}
+
+function pay(method){
+  // Simulate payment success
+  alert(`Payment successful via ${method}. You are now a Premium member for 28 days!`);
+  
+  // Set premium and expiry
+  const today = new Date();
+  const expiry = new Date();
+  expiry.setDate(today.getDate() + 28); // valid 28 days
+
+  currentUser.premium = true;
+  currentUser.premiumExpiry = expiry.toISOString();
+
+  users = users.map(u => u.id === currentUser.id ? currentUser : u);
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+  // Redirect to dashboard
+  location.href="dashboard.html";
+}
+
+// ----- AUTO CANCEL PREMIUM IF EXPIRED -----
+function checkPremiumExpiry(){
+  if(currentUser && currentUser.premium && currentUser.premiumExpiry){
+    const now = new Date();
+    const expiry = new Date(currentUser.premiumExpiry);
+    if(now > expiry){
+      currentUser.premium = false;
+      delete currentUser.premiumExpiry;
+      users = users.map(u => u.id === currentUser.id ? currentUser : u);
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      alert("Your Premium membership has expired.");
+    }
+  }
+}
+
+// Run check on page load
+checkPremiumExpiry();
+</script>
+
+</body>
+</html>

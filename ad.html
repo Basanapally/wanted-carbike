@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ad Details | Wanted CarBike</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
+.container{max-width:700px;margin:40px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+img{width:100%;max-height:400px;object-fit:cover;margin-bottom:15px;}
+button{padding:10px 15px;background:#0a2540;color:white;border:none;border-radius:5px;cursor:pointer;margin-top:10px;}
+button:hover{opacity:0.9;}
+</style>
+</head>
+<body>
+
+<div class="container" id="adContainer"></div>
+
+<script>
+let ads = JSON.parse(localStorage.getItem("ads")) || [];
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+// Get ad ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const adId = Number(urlParams.get("id"));
+const ad = ads.find(a => a.id === adId);
+const container = document.getElementById("adContainer");
+
+if(!ad){
+  container.innerHTML = "<p>Ad not found.</p>";
+} else {
+  // Build photos
+  let photosHTML = "";
+  ad.photos.forEach(p=>{
+    photosHTML += `<img src="${p}">`;
+  });
+
+  // Seller info logic
+  let sellerInfo = "";
+  if(!currentUser){
+    // Guest user
+    sellerInfo = `<p><i>Login/Register to see seller contact details.</i></p>
+                  <button onclick="goLogin()">Login/Register</button>`;
+  } else if(!currentUser.premium){
+    // Normal user
+    sellerInfo = `<p><i>Upgrade to Premium to see full seller contact.</i></p>
+                  <button onclick="goPremium()">Upgrade to Premium</button>`;
+  } else {
+    // Premium user
+    sellerInfo = `<p><b>Seller Name:</b> ${ad.sellerName}</p>
+                  <p><b>Phone:</b> ${ad.sellerPhone}</p>`;
+  }
+
+  container.innerHTML = `
+    ${photosHTML}
+    <h2>${ad.title}</h2>
+    <p><b>Category:</b> ${ad.category}</p>
+    <p><b>Make/Model:</b> ${ad.makeModel}</p>
+    <p><b>Year:</b> ${ad.year}</p>
+    <p><b>KM Driven:</b> ${ad.kmDriven}</p>
+    <p><b>Price:</b> ₹${ad.price}</p>
+    <p><b>Location:</b> ${ad.location}</p>
+    <p><b>Description:</b> ${ad.description}</p>
+    <hr>
+    ${sellerInfo}
+  `;
+}
+
+// Navigate to premium upgrade
+function goPremium(){
+  window.location.href = "dashboard.html"; // scroll or show premium upgrade section
+}
+
+// Navigate to login/register page
+function goLogin(){
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

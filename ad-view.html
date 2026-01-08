@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad Details - Vehicle Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;padding:0;font-family:'Roboto',sans-serif;background:#f4f6f8;color:#333;}
+header{display:flex;justify-content:space-between;align-items:center;padding:15px 50px;background:linear-gradient(90deg,#0a2540,#1a3a60);color:white;position:sticky;top:0;z-index:1000;}
+header .logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;font-family:'Montserrat',sans-serif;}
+header .logo img{width:50px;}
+header .auth-links a{margin-left:20px;font-weight:500;color:white;}
+header .auth-links a:hover{color:#ffd700;}
+.container{max-width:1000px;margin:30px auto;padding:0 20px;}
+.gallery{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;}
+.gallery img{height:300px;border-radius:10px;object-fit:cover;}
+.details h1{font-family:'Montserrat',sans-serif;margin-bottom:10px;}
+.details p{margin-bottom:8px;font-size:16px;}
+.back-btn{display:inline-block;margin-top:15px;padding:10px 20px;background:linear-gradient(90deg,#007bff,#00bfff);color:white;border:none;border-radius:8px;text-decoration:none;}
+.back-btn:hover{opacity:0.9;}
+footer{background:#0a2540;color:white;padding:20px;text-align:center;margin-top:50px;}
+footer a{margin:0 10px;color:white;font-weight:500;}
+footer a:hover{text-decoration:underline;}
+@media(max-width:768px){.gallery img{height:200px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="images/placeholder.jpg" alt="Logo">Vehicle Marketplace</div>
+  <nav class="auth-links">
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="gallery" id="gallery"></div>
+  <div class="details" id="details"></div>
+  <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
+</div>
+
+<footer>
+  <a href="#">Contact Us</a>
+  <a href="#">About Us</a>
+  <a href="#">Privacy Policy</a>
+  <a href="#">Terms & Conditions</a>
+</footer>
+
+<script>
+// Sample ads data (must match index.html)
+let ads = [
+  {id:1,category:'Car',title:'BMW X5',price:'$50,000',location:'London',photos:['images/placeholder.jpg','images/placeholder.jpg'],desc:'Luxury SUV in excellent condition'},
+  {id:2,category:'Bike',title:'Yamaha R1',price:'$18,000',location:'Manchester',photos:['images/placeholder.jpg'],desc:'Sport bike, like new'},
+  {id:3,category:'Car',title:'Tesla Model 3',price:'$45,000',location:'Birmingham',photos:['images/placeholder.jpg'],desc:'Electric car, full autopilot'},
+  {id:4,category:'Bike',title:'KTM Duke 390',price:'$5,500',location:'Leeds',photos:['images/placeholder.jpg'],desc:'Lightweight, perfect for city'}
+];
+
+// Get ad ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const adId = parseInt(urlParams.get('id'));
+
+// Find ad
+const ad = ads.find(a=>a.id===adId);
+
+// Render ad details
+if(ad){
+  const gallery = document.getElementById('gallery');
+  ad.photos.forEach(p=>{
+    const img = document.createElement('img');
+    img.src=p;
+    gallery.appendChild(img);
+  });
+  
+  const details = document.getElementById('details');
+  details.innerHTML=`
+    <h1>${ad.title}</h1>
+    <p><strong>Category:</strong> ${ad.category}</p>
+    <p><strong>Price:</strong> ${ad.price}</p>
+    <p><strong>Location:</strong> ${ad.location}</p>
+    <p><strong>Description:</strong> ${ad.desc}</p>
+  `;
+} else {
+  document.getElementById('details').innerHTML='<p>Ad not found.</p>';
+}
+</script>
+
+</body>
+</html>

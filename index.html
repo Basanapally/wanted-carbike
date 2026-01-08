@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wanted CarBike</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;}
+header{background:#0a2540;color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;}
+header a{color:white;margin-left:15px;text-decoration:none;font-weight:bold;}
+nav.categories{display:flex;gap:15px;padding:10px 30px;background:white;}
+nav.categories a{cursor:pointer;text-decoration:none;padding:6px 12px;border-radius:6px;color:#0a2540;}
+nav.categories a.active{background:#0a2540;color:white;}
+.container{max-width:1200px;margin:20px auto;padding:0 20px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;}
+.card{background:white;border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:0.3s;}
+.card:hover{transform:translateY(-5px);box-shadow:0 6px 18px rgba(0,0,0,0.2);}
+.card img{width:100%;height:160px;object-fit:cover;}
+.card .info{padding:10px;}
+footer{background:#0a2540;color:white;text-align:center;padding:20px;margin-top:50px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div><b>Wanted CarBike</b></div>
+  <div class="auth-links">
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+</header>
+
+<nav class="categories">
+  <a class="active" onclick="filterAds('')">All</a>
+  <a onclick="filterAds('Car')">Cars</a>
+  <a onclick="filterAds('Bike')">Bikes</a>
+</nav>
+
+<div class="container">
+  <h2>Available Ads</h2>
+  <div class="grid" id="adsGrid"></div>
+</div>
+
+<footer>
+  <p>© 2026 Wanted CarBike</p>
+</footer>
+
+<script>
+// ----- AUTH LINKS -----
+let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+const authLinks = document.querySelector('.auth-links');
+if(currentUser){
+  authLinks.innerHTML = `<a href="dashboard.html">My Account</a><a href="#" onclick="logout()">Logout</a>`;
+} else {
+  authLinks.innerHTML = `<a href="login.html">Login</a><a href="register.html">Register</a>`;
+}
+
+function logout(){
+  localStorage.removeItem('currentUser');
+  window.location.reload();
+}
+
+// ----- FILTER -----
+let currentFilter = '';
+function filterAds(cat){
+  currentFilter = cat;
+  document.querySelectorAll('nav.categories a').forEach(a=>a.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGrid();
+}
+
+// ----- GET ADS -----
+let ads = JSON.parse(localStorage.getItem('ads')) || [];
+
+// ----- RENDER GRID -----
+function renderGrid(){
+  const container = document.getElementById('adsGrid');
+  container.innerHTML = '';
+  let filtered = ads.filter(a=>!currentFilter || a.category===currentFilter);
+  if(filtered.length===0){
+    container.innerHTML = '<p style="padding:20px;">No ads available.</p>';
+    return;
+  }
+
+  filtered.forEach(ad=>{
+    let card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${ad.photos[0]}">
+      <div class="info">
+        <h4>${ad.title}</h4>
+        <p><b>Price:</b> ₹${ad.price}</p>
+        <p><b>Location:</b> ${ad.location}</p>
+      </div>
+    `;
+    card.onclick = ()=>{
+      // Navigate to ad.html with id
+      window.location.href = `ad.html?id=${ad.id}`;
+    }
+    container.appendChild(card);
+  });
+}
+
+// INITIAL RENDER
+renderGrid();
+</script>
+
+</body>
+</html>

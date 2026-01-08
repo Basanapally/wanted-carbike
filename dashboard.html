@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard | Wanted CarBike</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
+header{background:#0a2540;color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;}
+header a{color:white;margin-left:15px;text-decoration:none;font-weight:bold;}
+.container{max-width:800px;margin:30px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+button{padding:8px 12px;margin-top:10px;background:#0a2540;color:white;border:none;border-radius:5px;cursor:pointer;}
+button:hover{opacity:0.9;}
+input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:5px;border:1px solid #ccc;}
+h3{margin-top:20px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin-top:10px;}
+.card{border:1px solid #ccc;padding:10px;border-radius:8px;background:#fff;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>Wanted CarBike - Dashboard</div>
+  <div><a href="index.html">Home</a><a href="#" onclick="logout()">Logout</a></div>
+</header>
+
+<div class="container" id="dashboardContainer">
+  <h2 id="welcome"></h2>
+
+  <h3>Post New Ad</h3>
+  <div>
+    <select id="category">
+      <option value="">Select Category</option>
+      <option value="Car">Car</option>
+      <option value="Bike">Bike</option>
+    </select>
+    <input type="text" id="title" placeholder="Title">
+    <input type="text" id="makeModel" placeholder="Make / Model">
+    <input type="number" id="year" placeholder="Year">
+    <input type="number" id="kmDriven" placeholder="KM Driven">
+    <input type="number" id="price" placeholder="Price in ₹">
+    <input type="text" id="location" placeholder="Location">
+    <textarea id="description" placeholder="Description"></textarea>
+    <input type="file" id="photos" accept="image/*" multiple>
+    <button onclick="postAd()">Post Ad</button>
+  </div>
+
+  <h3>My Ads</h3>
+  <div class="grid" id="myAdsGrid"></div>
+
+  <h3>Premium Membership</h3>
+  <div id="premiumSection"></div>
+
+  <h3>Delete Account</h3>
+  <button onclick="deleteAccount()" style="background:red;">Delete My Account</button>
+</div>
+
+<script>
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let ads = JSON.parse(localStorage.getItem("ads")) || [];
+
+if(!currentUser){
+  alert("Please login first!");
+  location.href="login.html";
+}
+
+// Auto-cancel premium if expired
+if(currentUser.premium && currentUser.premiumExpiry){
+  const now = new Date();
+  const expiry = new Date(currentUser.premiumExpiry);
+  if(now>expiry){
+    currentUser.premium = false;
+    delete currentUser.premiumExpiry;
+    users = users.map(u=>u.id===currentUser.id?currentUser:u);
+    localStorage.setItem("users",JSON.stringify(users));
+    localStorage.setItem("currentUser",JSON.stringify(currentUser));
+    alert("Premium expired!");
+  }
+}
+
+document.getElementById("welcome").innerText = `Welcome, ${currentUser.name}`;
+
+// ----- POST NEW AD -----
+function postAd(){
+  const category = document.getElementById("category").value;
+  const title = document.getElementById("title").value;
+  const makeModel = document.getElementById("makeModel").value;
+  const year = document.getElementById("year").value;
+  const kmDriven = document.getElementById("kmDriven").value;
+  const price = document.getElementById("price").value;
+  const location = document.getElementById("location").value;
+  const description = document.getElementById("description").value;
+  const photosInput = document.getElementById("photos");
+
+  if(!category||!title||!makeModel||!year||!kmDriven||!price||!location||!description){
+    alert("All fields required!");
+    return;
+  }
+
+  // Photo rules
+  let photos = [];
+  if(photosInput.files.length>0){
+    if(!currentUser.premium && photosInput.files.length>2){
+      alert("Normal users can upload max 2 photos. Upgrade to premium for unlimited.");
+      return;
+    }
+    for(let f of photosInput.files){
+      let reader = new FileReader();
+      reader.onload = function(e){
+        photos.push(e.target.result);
+        if(photos.length===photosInput.files.length){
+          saveAd();
+        }
+      }
+      reader.readAsDataURL(f);
+    }
+  } else {
+    alert("Upload at least one photo!");
+    return;
+  }
+
+  function saveAd(){
+    const newAd = {
+      id: Date.now(),
+      category,title,makeModel,year,kmDriven,price,location,description,
+      photos,
+      sellerId: currentUser.id,
+      sellerName: currentUser.name,
+      sellerPhone: currentUser.phone
+    };
+    ads.push(newAd);
+    localStorage.setItem("ads", JSON.stringify(ads));
+    alert("Ad posted successfully!");
+    renderMyAds();
+  }
+}
+
+// ----- RENDER MY ADS -----
+function renderMyAds(){
+  const myAds = ads.filter(a=>a.sellerId===currentUser.id);
+  const container = document.getElementById("myAdsGrid");
+  container.innerHTML='';
+  if(myAds.length===0){
+    container.innerHTML="<p>No ads posted yet.</p>";
+    return;
+  }
+  myAds.forEach(a=>{
+    let card = document.createElement("div");
+    card.className="card";
+    card.innerHTML = `<h4>${a.title}</h4>
+                      <p>${a.category} | ₹${a.price}</p>
+                      <button onclick="deleteAd(${a.id})" style="background:red;">Delete</button>`;
+    container.appendChild(card);
+  });
+}
+renderMyAds();
+
+// DELETE AD
+function deleteAd(id){
+  if(confirm("Delete this ad?")){
+    ads = ads.filter(a=>a.id!==id);
+    localStorage.setItem("ads",JSON.stringify(ads));
+    renderMyAds();
+  }
+}
+
+// PREMIUM SECTION
+const premiumSec = document.getElementById("premiumSection");
+if(currentUser.premium){
+  premiumSec.innerHTML="<p>You are a Premium member. Unlimited photos and full seller contacts.</p>";
+} else {
+  premiumSec.innerHTML='<button onclick="goPremium()">Upgrade to Premium ₹99 / 28 days</button>';
+}
+function goPremium(){
+  window.location.href="premium.html";
+}
+
+// DELETE ACCOUNT
+function deleteAccount(){
+  if(confirm("Are you sure you want to delete your account permanently?")){
+    users = users.filter(u=>u.id!==currentUser.id);
+    localStorage.setItem("users",JSON.stringify(users));
+    // delete user ads
+    ads = ads.filter(a=>a.sellerId!==currentUser.id);
+    localStorage.setItem("ads",JSON.stringify(ads));
+    localStorage.removeItem("currentUser");
+    alert("Account deleted permanently!");
+    window.location.href="index.html";
+  }
+}
+
+// LOGOUT
+function logout(){
+  localStorage.removeItem("currentUser");
+  location.href="index.html";
+}
+</script>
+</body>
+</html>
