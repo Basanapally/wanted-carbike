@@ -1,65 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register | Wanted CarBike</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
-.container{max-width:400px;margin:50px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-input,button{width:100%;padding:10px;margin-top:10px;border-radius:5px;border:1px solid #ccc;}
-button{background:#0a2540;color:white;border:none;cursor:pointer;}
-button:hover{opacity:0.9;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Wanted Car & Bike</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: #1e1e1e; padding: 40px; border-radius: 15px; width: 350px; border: 1px solid #333; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; background: #ff4d4d; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        a { color: #ff4d4d; text-decoration: none; font-size: 0.9rem; }
+        .hidden { display: none; }
+        .secondary-btn { background: none; color: #ff4d4d; text-decoration: underline; font-size: 0.8rem; margin-top: 15px; border: none; cursor: pointer; }
+    </style>
 </head>
 <body>
-<div class="container">
-<h2>Register</h2>
-<input type="text" id="name" placeholder="Full Name" required>
-<input type="email" id="email" placeholder="Email" required>
-<input type="tel" id="phone" placeholder="Phone (+91)" required>
-<input type="password" id="password" placeholder="Password" required>
-<button onclick="registerUser()">Register</button>
-<p>Already have an account? <a href="login.html">Login</a></p>
-</div>
 
-<script>
-let users = JSON.parse(localStorage.getItem("users")) || [];
+    <div class="card" id="regForm">
+        <h2>Register</h2>
+        <input type="text" id="regName" placeholder="Full Name">
+        <input type="tel" id="regPhone" placeholder="Phone Number">
+        <input type="email" id="regEmail" placeholder="Email">
+        <input type="password" id="regPass" placeholder="Password">
+        <button id="regBtn">Create Account</button>
+        <p>Already a member? <a href="login.html">Login</a></p>
+    </div>
 
-function registerUser(){
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const password = document.getElementById("password").value;
+    <div class="card hidden" id="verifyStep">
+        <h2>Activate Account</h2>
+        <p>A verification link was sent to:<br><b id="displayEmail"></b></p>
+        <p style="font-size: 0.8rem; color: #aaa;">Click the link in your email, then click the button below to start using your account.</p>
+        
+        <button id="checkVerifyBtn">I've Clicked the Link</button>
+        
+        <button id="resendBtn" class="secondary-btn">Didn't get email? Resend link</button>
+        
+        <p id="statusMsg" style="color: #ff4d4d; font-size: 0.8rem; margin-top: 15px;"></p>
+    </div>
 
-  if(!name || !email || !phone || !password){
-    alert("All fields required!");
-    return;
-  }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // Validate Indian phone number
-  if(!/^[6-9]\d{9}$/.test(phone)){
-    alert("Enter valid Indian phone number");
-    return;
-  }
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+            authDomain: "wanted-carbike-62581.firebaseapp.com",
+            projectId: "wanted-carbike-62581",
+            storageBucket: "wanted-carbike-62581.firebasestorage.app",
+            messagingSenderId: "537372034018",
+            appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+        };
 
-  // Check if user exists
-  if(users.some(u=>u.email===email || u.phone===phone)){
-    alert("User already exists with this email or phone");
-    return;
-  }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-  const newUser = {
-    id: Date.now(),
-    name,email,phone,password,
-    premium:false
-  };
+        const regBtn = document.getElementById('regBtn');
+        const checkVerifyBtn = document.getElementById('checkVerifyBtn');
+        const resendBtn = document.getElementById('resendBtn');
+        const statusMsg = document.getElementById('statusMsg');
 
-  users.push(newUser);
-  localStorage.setItem("users", JSON.stringify(users));
-  alert("Registered successfully! Login now.");
-  window.location.href="login.html";
-}
-</script>
+        // --- STEP 1: HANDLE REGISTRATION ---
+        regBtn.onclick = async () => {
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+
+            if(!email || !pass || !name) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            try {
+                regBtn.disabled = true;
+                regBtn.innerText = "Creating...";
+
+                // Create User
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                
+                // Save User Info to Firestore (Profile creation)
+                await setDoc(doc(db, "users", cred.user.uid), {
+                    fullName: name,
+                    phone: phone,
+                    email: email,
+                    createdAt: new Date()
+                });
+
+                // Trigger Verification Email
+                await sendEmailVerification(cred.user);
+
+                // Show Activation Screen
+                document.getElementById('displayEmail').innerText = email;
+                document.getElementById('regForm').classList.add('hidden');
+                document.getElementById('verifyStep').classList.remove('hidden');
+
+            } catch (e) {
+                regBtn.disabled = false;
+                regBtn.innerText = "Create Account";
+                alert(e.message);
+            }
+        };
+
+        // --- STEP 2: CHECK ACTIVATION STATUS ---
+        checkVerifyBtn.onclick = async () => {
+            const user = auth.currentUser;
+            
+            // Critical: Force Firebase to refresh the user's data from the server
+            await user.reload(); 
+
+            if (user.emailVerified) {
+                alert("Account activated! Redirecting to home...");
+                window.location.href = "index.html"; 
+            } else {
+                statusMsg.innerText = "We still don't see the activation. Make sure you clicked the link!";
+            }
+        };
+
+        // --- OPTIONAL: RESEND EMAIL ---
+        resendBtn.onclick = async () => {
+            try {
+                await sendEmailVerification(auth.currentUser);
+                statusMsg.style.color = "#4dff88";
+                statusMsg.innerText = "Verification email resent! Please check your spam folder.";
+            } catch (e) {
+                statusMsg.style.color = "#ff4d4d";
+                statusMsg.innerText = "Error resending: " + e.message;
+            }
+        };
+    </script>
 </body>
 </html>
