@@ -1,43 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login | Wanted CarBike</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
-.container{max-width:400px;margin:50px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-input,button{width:100%;padding:10px;margin-top:10px;border-radius:5px;border:1px solid #ccc;}
-button{background:#0a2540;color:white;border:none;cursor:pointer;}
-button:hover{opacity:0.9;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Wanted CarBike</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e1e1e; padding: 40px; border-radius: 20px; width: 350px; border: 1px solid #333; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #ff4d4d; }
+        button { width: 100%; padding: 12px; background: #ff4d4d; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        #msg { color: #ff4d4d; font-size: 0.9rem; margin-top: 15px; min-height: 1.2rem; }
+        a { color: #ff4d4d; text-decoration: none; }
+    </style>
 </head>
 <body>
-<div class="container">
-<h2>Login</h2>
-<input type="text" id="user" placeholder="Email or Phone" required>
-<input type="password" id="password" placeholder="Password" required>
-<button onclick="loginUser()">Login</button>
-<p>Don't have an account? <a href="register.html">Register</a></p>
-</div>
 
-<script>
-let users = JSON.parse(localStorage.getItem("users")) || [];
+    <div class="card">
+        <h2>Login</h2>
+        <input type="email" id="logEmail" placeholder="Email">
+        <input type="password" id="logPass" placeholder="Password">
+        <button id="logBtn">Login</button>
+        <p id="msg"></p>
+        <p style="font-size: 0.8rem; color: #888; margin-top: 20px;">
+            Don't have an account? <a href="register.html">Register</a>
+        </p>
+    </div>
 
-function loginUser(){
-  const user = document.getElementById("user").value.trim();
-  const password = document.getElementById("password").value;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  const found = users.find(u=>(u.email===user || u.phone===user) && u.password===password);
-  if(!found){
-    alert("Invalid login details!");
-    return;
-  }
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+            authDomain: "wanted-carbike-62581.firebaseapp.com",
+            projectId: "wanted-carbike-62581",
+            storageBucket: "wanted-carbike-62581.firebasestorage.app",
+            messagingSenderId: "537372034018",
+            appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+        };
 
-  localStorage.setItem("currentUser", JSON.stringify(found));
-  alert("Login successful!");
-  window.location.href="dashboard.html";
-}
-</script>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const logBtn = document.getElementById('logBtn');
+        const msgArea = document.getElementById('msg');
+
+        logBtn.onclick = async () => {
+            const email = document.getElementById('logEmail').value;
+            const pass = document.getElementById('logPass').value;
+
+            if(!email || !pass) {
+                msgArea.innerText = "Please fill in all fields.";
+                return;
+            }
+
+            logBtn.disabled = true;
+            msgArea.innerText = "Processing...";
+
+            try {
+                // 1. Log the user in
+                const cred = await signInWithEmailAndPassword(auth, email, pass);
+                const user = cred.user;
+
+                // 2. Refresh user status to see if they verified their email
+                await user.reload();
+
+                // 3. Simple check: If verified, go to home. If not, show error and logout.
+                if (user.emailVerified) {
+                    window.location.href = "index.html"; 
+                } else {
+                    msgArea.style.color = "#ff4d4d";
+                    msgArea.innerText = "Account not active. Check email link!";
+                    await signOut(auth); // Only log out if they haven't verified yet
+                    logBtn.disabled = false;
+                }
+
+            } catch (e) {
+                logBtn.disabled = false;
+                if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+                    msgArea.innerText = "Invalid email or password.";
+                } else {
+                    msgArea.innerText = "Login Error. Please try again.";
+                }
+            }
+        };
+    </script>
 </body>
 </html>
