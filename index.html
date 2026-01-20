@@ -2,56 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wanted CarBike | Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ff4d4d; --dark: #121212; }
-        body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; scroll-behavior: smooth; }
+        :root { --primary: #ff4d4d; --dark: #121212; --glass: rgba(0,0,0,0.8); }
+        body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; overflow-x: hidden; }
         
-        /* Navigation */
-        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 10px 50px; box-sizing: border-box; z-index: 1000; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); align-items: center; }
-        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-        .logo-img { height: 45px; width: auto; border-radius: 8px; }
-        .brand-text { font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; }
+        /* Navigation - Guaranteed to show all buttons */
+        nav { 
+            position: fixed; top: 0; width: 100%; height: 60px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 10px; box-sizing: border-box; z-index: 2000; 
+            background: var(--glass); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .brand { display: flex; align-items: center; gap: 5px; text-decoration: none; color: white; min-width: 120px; }
+        .logo-img { height: 30px; width: auto; border-radius: 4px; }
+        .brand-text { font-weight: 700; font-size: 0.9rem; letter-spacing: 0px; }
 
-        .nav-links a, .nav-links button { color: white; text-decoration: none; margin-left: 15px; font-weight: 600; border: 2px solid white; padding: 8px 25px; border-radius: 25px; background: none; cursor: pointer; transition: 0.3s; }
-        .nav-links .post-btn { background: var(--primary); border-color: var(--primary); }
+        /* Button Container - Flex row */
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        
+        /* Global Button Style */
+        .nav-btn {
+            text-decoration: none; color: white; font-weight: 600;
+            font-size: 0.7rem; padding: 6px 10px; border-radius: 15px;
+            border: 1px solid white; transition: 0.3s; white-space: nowrap;
+            display: inline-block; background: none; cursor: pointer;
+        }
+        
+        /* Specific Button Colors */
+        .login-btn { border-color: #ccc; }
+        .reg-btn { background: var(--primary); border-color: var(--primary); }
+        .post-btn { background: #4dff88; border-color: #4dff88; color: #000; }
+        .logout-btn { border-color: #ff4d4d; color: #ff4d4d; }
 
-        /* Updated Hero Section with Category Buttons */
+        /* Hero Section */
         .hero {
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.6)), 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.5)), 
                         url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1920');
             background-size: cover; background-position: center;
-            height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            min-height: 60vh; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
+            padding: 80px 15px 30px; box-sizing: border-box;
         }
+        .hero h1 { font-size: 1.8rem; margin-bottom: 20px; text-transform: uppercase; }
 
-        .category-container { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
-        
+        /* Category Grid (2 per row on mobile) */
+        .category-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 400px; }
         .cat-card {
-            width: 220px; height: 280px; background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px); border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 20px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; cursor: pointer;
-            transition: 0.4s; text-decoration: none; color: white;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 15px; text-align: center; 
+            text-decoration: none; color: white; transition: 0.2s;
         }
+        .cat-card:active { background: var(--primary); }
+        .cat-card span { display: block; font-weight: 700; margin-top: 5px; font-size: 0.9rem; }
 
-        .cat-card:hover {
-            background: var(--primary); border-color: var(--primary);
-            transform: translateY(-10px); box-shadow: 0 10px 30px rgba(255, 77, 77, 0.4);
+        /* Ads List */
+        .ads-container { padding: 20px 10px; }
+        .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .ad-card { background: #1e1e1e; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+        .ad-img { width: 100%; height: 120px; object-fit: cover; }
+        .ad-info { padding: 10px; }
+        .ad-price { color: var(--primary); font-weight: 700; font-size: 1rem; }
+        .ad-title { font-size: 0.8rem; margin: 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Desktop Adjustments */
+        @media (min-width: 768px) {
+            nav { padding: 0 40px; }
+            .brand-text { font-size: 1.3rem; }
+            .nav-btn { font-size: 0.9rem; padding: 8px 20px; }
+            .hero h1 { font-size: 3rem; }
+            .category-container { display: flex; justify-content: center; max-width: none; gap: 20px; }
+            .cat-card { width: 180px; }
+            .ads-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+            .ad-img { height: 180px; }
         }
-
-        .cat-card i { font-size: 4rem; margin-bottom: 15px; }
-        .cat-card span { font-size: 1.5rem; font-weight: 700; }
-
-        /* Ads Grid */
-        .ads-container { padding: 50px; max-width: 1200px; margin: 0 auto; }
-        .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-        .ad-card { background: #1e1e1e; border-radius: 15px; overflow: hidden; border: 1px solid #333; }
-        .ad-gallery { display: flex; overflow-x: auto; background: #000; height: 200px; }
-        .ad-gallery img { height: 100%; width: 100%; object-fit: cover; flex-shrink: 0; }
-        .ad-info { padding: 20px; }
-        .ad-price { color: var(--primary); font-size: 1.5rem; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -61,41 +88,42 @@
             <img src="logowbc.jpg" alt="Logo" class="logo-img">
             <span class="brand-text">WANTED CARBIKE</span>
         </a>
+        
         <div class="nav-links">
-            <div id="guestLinks">
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
+            <div id="guestLinks" style="display: flex; gap: 6px;">
+                <a href="login.html" class="nav-btn login-btn">Login</a>
+                <a href="register.html" class="nav-btn reg-btn">Register</a>
             </div>
-            <div id="userLinks" style="display:none;">
-                <a href="post-ad.html" class="post-btn">+ Post Ad</a>
-                <button onclick="logout()">Logout</button>
+            <div id="userLinks" style="display:none; gap: 6px;">
+                <a href="post-ad.html" class="nav-btn post-btn">+ Post</a>
+                <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
             </div>
         </div>
     </nav>
 
     <div class="hero">
-        <h1 style="font-size: 3rem; margin-bottom: 10px;">SELECT CATEGORY</h1>
+        <h1>Find Your Vehicle</h1>
         <div class="category-container">
             <a href="cars.html" class="cat-card">
-                <div style="font-size: 5rem;">🚗</div>
+                <div style="font-size: 2.5rem;">🚗</div>
                 <span>CARS</span>
             </a>
             <a href="bikes.html" class="cat-card">
-                <div style="font-size: 5rem;">🏍️</div>
+                <div style="font-size: 2.5rem;">🏍️</div>
                 <span>BIKES</span>
             </a>
         </div>
     </div>
 
     <div class="ads-container">
-        <h2>Recommended For You</h2>
-        <div class="ads-grid" id="adsGrid">Loading verified ads...</div>
+        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Latest Ads</h2>
+        <div class="ads-grid" id="adsGrid">Loading...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
@@ -110,35 +138,37 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // UI Auth Logic
         onAuthStateChanged(auth, (user) => {
-            document.getElementById('guestLinks').style.display = user ? 'none' : 'block';
-            document.getElementById('userLinks').style.display = user ? 'block' : 'none';
+            document.getElementById('guestLinks').style.display = user ? 'none' : 'flex';
+            document.getElementById('userLinks').style.display = user ? 'flex' : 'none';
         });
 
+        // Load Ads
         async function fetchAds() {
             const grid = document.getElementById('adsGrid');
             try {
-                // Fetching all recent ads for the homepage
                 const snap = await getDocs(collection(db, "ads"));
                 grid.innerHTML = '';
+                if (snap.empty) { grid.innerHTML = '<p>No ads found.</p>'; return; }
+
                 snap.forEach(doc => {
                     const data = doc.data();
-                    const photosHtml = data.photos ? data.photos.map(url => `<img src="${url}">`).join('') : '';
+                    const img = data.imageUrl || data.image || (data.photos ? data.photos[0] : 'https://via.placeholder.com/150');
                     grid.innerHTML += `
                         <div class="ad-card">
-                            <div class="ad-gallery">${photosHtml}</div>
+                            <img src="${img}" class="ad-img">
                             <div class="ad-info">
-                                <div class="ad-price">RS ${data.price}</div>
-                                <h3>${data.brand || ''} ${data.model || ''}</h3>
-                                <p>${data.year || ''} | ${data.km || 0} KM</p>
+                                <div class="ad-price">₹ ${data.price}</div>
+                                <div class="ad-title">${data.title || data.brand || 'Vehicle'}</div>
                             </div>
                         </div>`;
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { grid.innerHTML = '<p>Error loading ads.</p>'; }
         }
-        fetchAds();
-
+        
         window.logout = () => signOut(auth).then(() => location.reload());
+        fetchAds();
     </script>
 </body>
 </html>
