@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Details | Wanted CarBike</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff4d4d; --dark: #121212; --card: #1e1e1e; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; padding-bottom: 40px; }
+        
+        /* Navbar */
+        .top-nav { padding: 15px; display: flex; align-items: center; background: rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(5px); }
+        .back-btn { text-decoration: none; color: white; font-size: 1.2rem; margin-right: 15px; }
+
+        /* Image Gallery */
+        .gallery-container { width: 100%; height: 300px; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; background: #000; }
+        .gallery-container img { width: 100%; height: 100%; object-fit: contain; flex-shrink: 0; scroll-snap-align: start; }
+        .gallery-container::-webkit-scrollbar { display: none; }
+        .swipe-hint { text-align: center; font-size: 0.7rem; color: #888; margin-top: 5px; }
+
+        /* Content */
+        .main-content { padding: 20px; }
+        .price-tag { font-size: 2rem; color: var(--primary); font-weight: 700; }
+        .title { font-size: 1.4rem; margin: 10px 0; font-weight: 600; }
+
+        /* Grid Specs */
+        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .spec-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; }
+        .spec-card small { color: #888; font-size: 0.7rem; display: block; text-transform: uppercase; }
+        .spec-card b { font-size: 1rem; color: #fff; }
+
+        /* Description */
+        .desc-section { background: var(--card); padding: 20px; border-radius: 12px; margin-top: 10px; border: 1px solid #333; }
+        .desc-section h4 { margin-top: 0; color: var(--primary); }
+        .desc-text { font-size: 0.9rem; color: #ccc; line-height: 1.6; }
+
+        /* Premium Lock Section */
+        .lock-box { 
+            margin-top: 30px; background: linear-gradient(145deg, #2a1a1a, #1a1a1a); 
+            padding: 25px; border-radius: 15px; border: 1px dashed var(--primary); text-align: center; 
+        }
+        .lock-box h3 { margin: 0; color: #ffd700; font-size: 1.1rem; }
+        .lock-box p { font-size: 0.8rem; color: #aaa; margin: 10px 0 20px; }
+        .premium-btn { 
+            background: var(--primary); color: white; border: none; padding: 15px 30px; 
+            border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">←</a>
+        <span style="font-weight: 600;">Vehicle Details</span>
+    </div>
+
+    <div id="detailsPage">
+        <div style="padding: 50px; text-align: center;">Loading Vehicle Details...</div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+        authDomain: "wanted-carbike-62581.firebaseapp.com",
+        projectId: "wanted-carbike-62581",
+        storageBucket: "wanted-carbike-62581.firebasestorage.app",
+        messagingSenderId: "537372034018",
+        appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 1. Get Ad ID from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const adId = urlParams.get('id');
+
+    async function loadVehicleData() {
+        if (!adId) {
+            document.getElementById('detailsPage').innerHTML = "No vehicle selected.";
+            return;
+        }
+
+        try {
+            const docRef = doc(db, "ads", adId);
+            const snap = await getDoc(docRef);
+
+            if (snap.exists()) {
+                const data = snap.data();
+                
+                // Prepare Gallery
+                const photos = data.photos || [];
+                const galleryHtml = photos.length > 0 
+                    ? photos.map(url => `<img src="${url}">`).join('')
+                    : `<img src="https://via.placeholder.com/400x300?text=No+Images+Available">`;
+
+                document.getElementById('detailsPage').innerHTML = `
+                    <div class="gallery-container">${galleryHtml}</div>
+                    <p class="swipe-hint">${photos.length > 1 ? '← Swipe to see more photos →' : ''}</p>
+
+                    <div class="main-content">
+                        <div class="price-tag">RS ${data.price}</div>
+                        <h1 class="title">${data.brand} ${data.model}</h1>
+                        
+                        <div class="specs-grid">
+                            <div class="spec-card"><small>Year</small><b>${data.year || 'N/A'}</b></div>
+                            <div class="spec-card"><small>KM Driven</small><b>${data.km || '0'} km</b></div>
+                            <div class="spec-card"><small>Category</small><b>${data.category}</b></div>
+                            <div class="spec-card"><small>Type</small><b>Verified Ad</b></div>
+                        </div>
+
+                        <div class="desc-section">
+                            <h4>Description</h4>
+                            <div class="desc-text">${data.desc || 'No additional details provided by the seller.'}</div>
+                        </div>
+
+                        <div class="lock-box">
+                            <h3>⭐ Seller Details Locked</h3>
+                            <p>To see the phone number and WhatsApp of this seller, you must be a premium member.</p>
+                            <button class="premium-btn" onclick="location.href='premium.html'">UPGRADE TO VIEW CONTACT</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('detailsPage').innerHTML = "This ad has been removed or does not exist.";
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('detailsPage').innerHTML = "Error loading data.";
+        }
+    }
+
+    loadVehicleData();
+</script>
+
+</body>
+</html>
