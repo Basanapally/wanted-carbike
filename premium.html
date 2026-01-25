@@ -1,77 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Upgrade to Premium | Wanted CarBike</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
-.container{max-width:500px;margin:50px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-h2{text-align:center;}
-button{width:100%;padding:10px;margin-top:15px;background:#0a2540;color:white;border:none;border-radius:5px;cursor:pointer;}
-button:hover{opacity:0.9;}
-.payment-option{border:1px solid #ccc;padding:10px;margin-top:10px;border-radius:5px;cursor:pointer;}
-.payment-option:hover{background:#f0f0f0;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to Premium | Wanted CarBike</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff4d4d; --dark: #121212; --gold: #ffd700; }
+        
+        /* Initial Hide to prevent flickering */
+        body { 
+            margin: 0; font-family: 'Poppins', sans-serif; 
+            background: var(--dark); color: white; 
+            display: none; /* Hidden until Auth check passes */
+        }
+
+        .loading-screen {
+            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); justify-content: center; align-items: center; z-index: 9999;
+        }
+
+        .container { padding: 40px 20px; text-align: center; max-width: 500px; margin: 0 auto; }
+        
+        .premium-card {
+            background: linear-gradient(145deg, #1e1e1e, #141414);
+            border: 2px solid var(--gold); border-radius: 20px;
+            padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .price { font-size: 2.5rem; font-weight: 700; color: var(--gold); margin: 10px 0; }
+        .price span { font-size: 1rem; color: #888; }
+
+        ul { text-align: left; padding: 0; list-style: none; margin: 25px 0; }
+        li { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        li::before { content: '✅'; font-size: 0.8rem; }
+
+        .btn-pay {
+            background: var(--gold); color: black; border: none;
+            padding: 18px; width: 100%; border-radius: 12px;
+            font-weight: 700; font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-pay:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); }
+
+        .back-link { display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 0.8rem; }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>Upgrade to Premium</h2>
-  <p>Get unlimited photo uploads and full seller contact access. <br>Price: ₹99 / 28 days</p>
+    <div id="loader" class="loading-screen">
+        <div style="color: var(--primary); font-weight: 600;">Verifying Account...</div>
+    </div>
 
-  <div class="payment-option" onclick="pay('Credit/Debit Card')">Credit/Debit Card</div>
-  <div class="payment-option" onclick="pay('UPI Payment')">UPI Payment</div>
-  <div class="payment-option" onclick="pay('QR Code Payment')">QR Code Payment</div>
-</div>
+    <div class="container">
+        <h1 style="color: var(--primary);">Unlock Premium</h1>
+        <p style="color: #aaa;">Get direct access to sellers and post unlimited ads today.</p>
 
-<script>
-let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-let users = JSON.parse(localStorage.getItem("users")) || [];
+        <div class="premium-card">
+            <div style="font-size: 0.8rem; color: var(--gold); font-weight: 700; text-transform: uppercase;">Lifetime Membership</div>
+            <div class="price">RS 499<span>/one-time</span></div>
+            
+            <ul>
+                <li>View Seller Phone Numbers</li>
+                <li>Direct WhatsApp Chat Integration</li>
+                <li>Post up to 50 Photos per Ad</li>
+                <li>Premium Badge on your listings</li>
+                <li>Priority support</li>
+            </ul>
 
-if(!currentUser){
-  alert("Please login first");
-  location.href="login.html";
-}
+            <button class="btn-pay" onclick="startPayment()">PAY WITH UPI / CARD</button>
+        </div>
 
-function pay(method){
-  // Simulate payment success
-  alert(`Payment successful via ${method}. You are now a Premium member for 28 days!`);
-  
-  // Set premium and expiry
-  const today = new Date();
-  const expiry = new Date();
-  expiry.setDate(today.getDate() + 28); // valid 28 days
+        <a href="index.html" class="back-link">Return to Home</a>
+    </div>
 
-  currentUser.premium = true;
-  currentUser.premiumExpiry = expiry.toISOString();
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  users = users.map(u => u.id === currentUser.id ? currentUser : u);
-  localStorage.setItem("users", JSON.stringify(users));
-  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+        authDomain: "wanted-carbike-62581.firebaseapp.com",
+        projectId: "wanted-carbike-62581",
+        storageBucket: "wanted-carbike-62581.firebasestorage.app",
+        messagingSenderId: "537372034018",
+        appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+    };
 
-  // Redirect to dashboard
-  location.href="dashboard.html";
-}
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-// ----- AUTO CANCEL PREMIUM IF EXPIRED -----
-function checkPremiumExpiry(){
-  if(currentUser && currentUser.premium && currentUser.premiumExpiry){
-    const now = new Date();
-    const expiry = new Date(currentUser.premiumExpiry);
-    if(now > expiry){
-      currentUser.premium = false;
-      delete currentUser.premiumExpiry;
-      users = users.map(u => u.id === currentUser.id ? currentUser : u);
-      localStorage.setItem("users", JSON.stringify(users));
-      localStorage.setItem("currentUser", JSON.stringify(currentUser));
-      alert("Your Premium membership has expired.");
-    }
-  }
-}
+    // FIXED AUTH CHECK:
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is logged in! 
+            document.getElementById('loader').style.display = 'none'; // Hide loader
+            document.body.style.display = 'block'; // Show page
+        } else {
+            // No session found, redirect to login
+            console.log("Not logged in. Redirecting...");
+            window.location.href = "login.html";
+        }
+    });
 
-// Run check on page load
-checkPremiumExpiry();
+    // Payment Placeholder
+    window.startPayment = () => {
+        alert("Payment Gateway Integrating... \n\nYou can now link this to Razorpay or your WhatsApp for manual payment confirmation.");
+    };
 </script>
 
 </body>
