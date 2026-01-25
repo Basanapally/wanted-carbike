@@ -9,71 +9,78 @@
         :root { --primary: #ff4d4d; --dark: #121212; --glass: rgba(0,0,0,0.85); }
         body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; overflow-x: hidden; }
         
-        /* Navigation */
+        /* Navigation - Fixed with Register Button */
         nav { 
-            position: fixed; top: 0; width: 100%; height: 65px;
+            position: fixed; top: 0; width: 100%; height: 70px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 15px; box-sizing: border-box; z-index: 2000; 
+            padding: 0 12px; box-sizing: border-box; z-index: 2000; 
             background: var(--glass); backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: white; }
         .logo-img { height: 35px; border-radius: 5px; }
-        .brand-text { font-weight: 700; font-size: 1rem; }
+        .brand-text { font-weight: 700; font-size: 0.9rem; }
 
-        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
         .nav-btn {
             text-decoration: none; color: white; font-weight: 600;
-            font-size: 0.75rem; padding: 7px 12px; border-radius: 20px;
+            font-size: 0.7rem; padding: 7px 10px; border-radius: 20px;
             border: 1px solid white; transition: 0.3s; white-space: nowrap;
         }
+        /* Specific Styles */
+        .reg-btn { background: var(--primary); border-color: var(--primary); }
         .post-btn { background: #4dff88; border-color: #4dff88; color: #000; }
-        .logout-btn { border-color: var(--primary); color: var(--primary); }
+        .logout-btn { border-color: #888; color: #888; background: none; cursor: pointer; }
 
-        /* Hero */
+        /* Hero Section */
         .hero {
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80');
             background-size: cover; background-position: center;
-            height: 50vh; display: flex; flex-direction: column; 
+            height: 45vh; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; text-align: center;
-            padding-top: 60px;
+            padding-top: 50px;
         }
-        .hero h1 { font-size: 1.8rem; margin-bottom: 20px; letter-spacing: 1px; }
+        .hero h1 { font-size: 1.6rem; margin-bottom: 15px; }
 
-        /* Categories */
-        .category-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
+        /* Category Grid */
+        .category-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 90%; max-width: 400px; }
         .cat-card {
             background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 20px; text-align: center; 
+            border-radius: 12px; padding: 15px; text-align: center; 
             text-decoration: none; color: white; transition: 0.3s;
         }
         .cat-card:active { background: var(--primary); transform: scale(0.95); }
-        .cat-card span { display: block; font-weight: 700; margin-top: 8px; font-size: 0.9rem; }
+        .cat-card span { display: block; font-weight: 700; margin-top: 5px; font-size: 0.85rem; }
 
         /* Ads Grid */
-        .ads-section { padding: 25px 15px; }
-        .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .ads-section { padding: 20px 12px; }
+        .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         
         .ad-link { text-decoration: none; color: inherit; display: block; }
         .ad-card { 
             background: #1e1e1e; border-radius: 12px; overflow: hidden; border: 1px solid #333; 
-            height: 100%; display: flex; flex-direction: column;
+            height: 100%; display: flex; flex-direction: column; transition: 0.2s;
         }
-        .ad-img { width: 100%; height: 130px; object-fit: cover; background: #222; }
-        .ad-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
-        .ad-price { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
-        .ad-title { font-size: 0.85rem; margin: 5px 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ad-card:active { transform: scale(0.98); }
+        .ad-img { width: 100%; height: 120px; object-fit: cover; background: #222; }
+        .ad-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; }
+        .ad-price { color: var(--primary); font-weight: 700; font-size: 1rem; }
+        .ad-title { font-size: 0.8rem; margin: 4px 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .view-details-tag { 
-            margin-top: auto; font-size: 0.7rem; color: #888; border-top: 1px solid #333; 
+            margin-top: auto; font-size: 0.65rem; color: #888; border-top: 1px solid #333; 
             padding-top: 8px; display: flex; justify-content: space-between; align-items: center;
         }
-        .view-details-tag b { color: var(--primary); }
+        .view-details-tag b { color: var(--primary); font-size: 0.7rem; }
 
+        /* Desktop */
         @media (min-width: 768px) {
-            .ads-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
-            .ad-img { height: 180px; }
-            .hero h1 { font-size: 3rem; }
+            nav { padding: 0 40px; }
+            .brand-text { font-size: 1.2rem; }
+            .nav-btn { font-size: 0.85rem; padding: 8px 18px; }
+            .hero h1 { font-size: 2.8rem; }
+            .ads-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
+            .ad-img { height: 170px; }
         }
     </style>
 </head>
@@ -86,33 +93,34 @@
         </a>
         
         <div class="nav-links">
-            <div id="guestLinks" style="display: flex; gap: 8px;">
+            <div id="guestLinks" style="display: flex; gap: 6px;">
                 <a href="login.html" class="nav-btn">Login</a>
+                <a href="register.html" class="nav-btn reg-btn">Register</a>
             </div>
-            <div id="userLinks" style="display:none; gap: 8px;">
+            <div id="userLinks" style="display:none; gap: 6px;">
                 <a href="post-ad.html" class="nav-btn post-btn">+ Post</a>
-                <button onclick="logout()" class="nav-btn logout-btn" style="background:none; cursor:pointer;">Logout</button>
+                <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
             </div>
         </div>
     </nav>
 
     <div class="hero">
-        <h1>Find Your Next Drive</h1>
+        <h1>Find Your Perfect Ride</h1>
         <div class="category-container">
             <a href="cars.html" class="cat-card">
-                <div style="font-size: 2rem;">🚗</div>
+                <div style="font-size: 1.8rem;">🚗</div>
                 <span>CARS</span>
             </a>
             <a href="bikes.html" class="cat-card">
-                <div style="font-size: 2rem;">🏍️</div>
+                <div style="font-size: 1.8rem;">🏍️</div>
                 <span>BIKES</span>
             </a>
         </div>
     </div>
 
     <div class="ads-section">
-        <h2 style="font-size: 1.2rem; margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 10px;">LATEST LISTINGS</h2>
-        <div class="ads-grid" id="adsGrid">Loading ads...</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 15px; border-left: 3px solid var(--primary); padding-left: 10px;">LATEST LISTINGS</h2>
+        <div class="ads-grid" id="adsGrid">Loading latest ads...</div>
     </div>
 
     <script type="module">
@@ -133,28 +141,38 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Auth Logic
+        // UI Auth Logic: Toggle Login/Register vs Post/Logout
         onAuthStateChanged(auth, (user) => {
-            document.getElementById('guestLinks').style.display = user ? 'none' : 'flex';
-            document.getElementById('userLinks').style.display = user ? 'flex' : 'none';
+            const guestLinks = document.getElementById('guestLinks');
+            const userLinks = document.getElementById('userLinks');
+            if (user) {
+                guestLinks.style.display = 'none';
+                userLinks.style.display = 'flex';
+            } else {
+                guestLinks.style.display = 'flex';
+                userLinks.style.display = 'none';
+            }
         });
 
-        // Fetch Ads Logic
+        // Load Ads from Firestore
         async function fetchAds() {
             const grid = document.getElementById('adsGrid');
             try {
-                // Fetch ads sorted by newest first
+                // Fetch by date (Note: If this errors, check Browser Console for Firebase Index link)
                 const q = query(collection(db, "ads"), orderBy("postedAt", "desc"));
                 const snap = await getDocs(q);
                 
                 grid.innerHTML = '';
-                if (snap.empty) { grid.innerHTML = '<p>No listings found.</p>'; return; }
+                if (snap.empty) { 
+                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No vehicles posted yet.</p>'; 
+                    return; 
+                }
 
                 snap.forEach(doc => {
                     const data = doc.data();
                     const adId = doc.id;
                     
-                    // Logic to find image: Check ImgBB array first, then fallback
+                    // Logic for ImgBB array link
                     const img = (data.photos && data.photos.length > 0) 
                                 ? data.photos[0] 
                                 : 'https://via.placeholder.com/300?text=No+Image';
@@ -167,20 +185,25 @@
                                     <div class="ad-price">RS ${data.price}</div>
                                     <div class="ad-title">${data.brand} ${data.model}</div>
                                     <div class="view-details-tag">
-                                        <span>Details</span>
-                                        <b>VIEW →</b>
+                                        <span>Click for Info</span>
+                                        <b>VIEW DETAILS →</b>
                                     </div>
                                 </div>
                             </div>
                         </a>`;
                 });
             } catch (e) { 
-                console.error(e);
-                grid.innerHTML = '<p>Error loading ads. Check your Firestore rules.</p>'; 
+                console.error("Firebase Error:", e);
+                grid.innerHTML = '<p>Check Firestore Rules or Indexing.</p>'; 
             }
         }
 
-        window.logout = () => signOut(auth).then(() => location.reload());
+        window.logout = () => {
+            signOut(auth).then(() => {
+                window.location.reload();
+            }).catch((error) => alert(error.message));
+        };
+
         fetchAds();
     </script>
 </body>
