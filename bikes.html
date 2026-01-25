@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cars | Wanted CarBike</title>
+    <title>Bikes | Wanted CarBike</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ff4d4d; --dark: #121212; }
         body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; }
         
-        /* Mobile Friendly Nav */
         nav { 
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 15px; background: rgba(0,0,0,0.9); 
@@ -22,9 +21,7 @@
         .container { padding: 20px 15px; max-width: 1200px; margin: 0 auto; }
         h1 { font-size: 1.5rem; margin-bottom: 20px; color: white; }
 
-        /* Responsive Grid: 2 columns on mobile */
         .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        
         .ad-card { background: #1e1e1e; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
         .ad-gallery { display: flex; overflow-x: auto; height: 140px; background: #000; scroll-snap-type: x mandatory; }
         .ad-gallery img { height: 100%; width: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
@@ -54,7 +51,7 @@
     </nav>
 
     <div class="container">
-        <h1> Verified Bikes</h1>
+        <h1>Verified Bikes</h1>
         <div class="ads-grid" id="bikeGrid">Loading bikes...</div>
     </div>
 
@@ -74,17 +71,21 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function fetchCars() {
-            const grid = document.getElementById('carGrid');
+        async function fetchBikes() {
+            const grid = document.getElementById('bikeGrid'); // Fixed ID
             try {
-                const q = query(collection(db, "ads"), where("category", "==", "Car"));
+                // Changing "Car" to "Bike" to filter correctly
+                const q = query(collection(db, "ads"), where("category", "==", "Bike"));
                 const snap = await getDocs(q);
+                
                 grid.innerHTML = '';
-                if(snap.empty) { grid.innerHTML = "<p>No cars found.</p>"; return; }
+                if(snap.empty) { grid.innerHTML = "<p>No bikes found.</p>"; return; }
 
                 snap.forEach(doc => {
                     const data = doc.data();
+                    // Using the "photos" array from your ImgBB logic
                     const photos = data.photos ? data.photos.map(url => `<img src="${url}">`).join('') : '<img src="https://via.placeholder.com/150">';
+                    
                     grid.innerHTML += `
                         <div class="ad-card">
                             <div class="ad-gallery">${photos}</div>
@@ -95,9 +96,12 @@
                             </div>
                         </div>`;
                 });
-            } catch (e) { console.error(e); grid.innerHTML = "<p>Error loading cars.</p>"; }
+            } catch (e) { 
+                console.error(e); 
+                grid.innerHTML = "<p>Error loading bikes.</p>"; 
+            }
         }
-        fetchCars();
+        fetchBikes();
     </script>
 </body>
 </html>
