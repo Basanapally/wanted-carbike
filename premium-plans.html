@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to Premium | Wanted CarBike</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff4d4d; --dark: #121212; --gold: #ffd700; --card: #1e1e1e; }
+        
+        body { 
+            margin: 0; font-family: 'Poppins', sans-serif; 
+            background: var(--dark); color: white; 
+            display: none; /* Hidden until Auth check passes */
+        }
+
+        .loading-screen {
+            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); justify-content: center; align-items: center; z-index: 9999;
+        }
+
+        .container { padding: 40px 20px; text-align: center; max-width: 500px; margin: 0 auto; }
+        
+        .premium-card {
+            background: linear-gradient(145deg, #1e1e1e, #141414);
+            border: 2px solid var(--gold); border-radius: 20px;
+            padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .price { font-size: 2.5rem; font-weight: 700; color: var(--gold); margin: 10px 0; }
+        .price span { font-size: 1rem; color: #888; }
+
+        ul { text-align: left; padding: 0; list-style: none; margin: 25px 0; }
+        li { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        li::before { content: '✅'; font-size: 0.8rem; }
+
+        /* QR Section */
+        .qr-section {
+            background: white; padding: 15px; border-radius: 15px;
+            display: inline-block; margin: 20px 0;
+        }
+        .qr-section img { width: 200px; height: 200px; display: block; }
+
+        .payment-details {
+            text-align: left; background: #252525; padding: 15px;
+            border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--gold);
+        }
+
+        .btn-pay {
+            background: #25d366; color: white; border: none;
+            padding: 18px; width: 100%; border-radius: 12px;
+            font-weight: 700; font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s; text-decoration: none; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-pay:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
+
+        .back-link { display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div id="loader" class="loading-screen">
+        <div style="color: var(--gold); font-weight: 600;">Verifying Account...</div>
+    </div>
+
+    <div class="container">
+        <h1 style="color: var(--primary);">Unlock Premium</h1>
+        <p style="color: #aaa;">Get direct access to sellers and post unlimited ads today.</p>
+
+        <div class="premium-card">
+            <div style="font-size: 0.8rem; color: var(--gold); font-weight: 700; text-transform: uppercase;">Subscription </div>
+            <div class="price">RS 99<span>/month </span></div>
+            
+            <ul>
+                <li>View Seller Phone Numbers</li>
+                <li>Post Unlimited Ads</li>
+                <li>Premium Gold Badge</li>
+                <li>Priority Support</li>
+            </ul>
+
+            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+            
+            <p style="font-size: 0.85rem; color: #ffd700;">STEP 1: Scan to Pay</p>
+            <div class="qr-section">
+                <img src="Qr code.jpeg" alt="Payment QR">
+            </div>
+
+            
+
+            <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 15px;">STEP 2: Send screenshot for activation</p>
+            
+            <a href="#" id="whatsappBtn" class="btn-pay">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20">
+                SEND SCREENSHOT
+            </a>
+        </div>
+
+        <a href="index.html" class="back-link">Return to Home</a>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+        authDomain: "wanted-carbike-62581.firebaseapp.com",
+        projectId: "wanted-carbike-62581",
+        storageBucket: "wanted-carbike-62581.firebasestorage.app",
+        messagingSenderId: "537372034018",
+        appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('loader').style.display = 'none';
+            document.body.style.display = 'block';
+
+            // Setup WhatsApp Link
+            const waBtn = document.getElementById('whatsappBtn');
+            const myNumber = "923XXXXXXXXX"; // Change to your number
+            const message = encodeURIComponent(`Hi Wanted CarBike!\n\nI want to activate Premium.\nEmail: ${user.email}\n\n[Attached Screenshot]`);
+            waBtn.href = `https://wa.me/${myNumber}?text=${message}`;
+            
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+</script>
+
+</body>
+</html>
