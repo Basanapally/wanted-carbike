@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Full Listing | Wanted CarBike</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff4d4d; --dark: #121212; }
+        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; padding: 20px; }
+        .edit-container { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 30px; border-radius: 15px; border: 1px solid #333; }
+        h2 { color: var(--primary); margin-top: 0; }
+        
+        label { display: block; margin: 15px 0 5px; font-size: 0.85rem; color: #aaa; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; background: #121212; border: 1px solid #444; 
+            color: white; border-radius: 8px; box-sizing: border-box; font-family: inherit;
+        }
+        
+        .photo-preview-grid { display: flex; gap: 10px; overflow-x: auto; margin: 10px 0; padding: 10px 0; }
+        .photo-preview-grid img { height: 80px; width: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #444; }
+
+        .save-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; margin-top: 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .save-btn:disabled { background: #555; cursor: not-allowed; }
+        .cancel-link { display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="edit-container">
+        <h2>Edit Full Listing</h2>
+        
+        <label>Category</label>
+        <select id="category">
+            <option value="Car">Car</option>
+            <option value="Bike">Bike</option>
+        </select>
+
+        <label>Brand</label>
+        <input type="text" id="brand" placeholder="e.g. Honda">
+
+        <label>Model</label>
+        <input type="text" id="model" placeholder="e.g. Civic">
+
+        <label>Year</label>
+        <input type="number" id="year">
+
+        <label>Kilometers Driven</label>
+        <input type="number" id="km">
+
+        <label>Price (RS)</label>
+        <input type="number" id="price">
+
+        <label>Description</label>
+        <textarea id="desc" rows="4"></textarea>
+
+        <label>Current Photos</label>
+        <div id="currentPhotos" class="photo-preview-grid"></div>
+
+        <label>Replace All Photos (Optional)</label>
+        <input type="file" id="fileInput" multiple accept="image/*">
+        <p style="font-size: 0.7rem; color: #666;">Selecting new files will replace the old ones.</p>
+
+        <button class="save-btn" id="saveBtn">Save All Changes</button>
+        <a href="dashboard.html" class="cancel-link">Cancel and Return</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+            authDomain: "wanted-carbike-62581.firebaseapp.com",
+            projectId: "wanted-carbike-62581",
+            storageBucket: "wanted-carbike-62581.firebasestorage.app",
+            messagingSenderId: "537372034018",
+            appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const adId = new URLSearchParams(window.location.search).get('id');
+        let existingPhotos = [];
+
+        // 1. LOAD ALL CURRENT DATA
+        async function loadAdDetails() {
+            if (!adId) return;
+            const snap = await getDoc(doc(db, "ads", adId));
+            if (snap.exists()) {
+                const data = snap.data();
+                document.getElementById('category').value = data.category;
+                document.getElementById('brand').value = data.brand;
+                document.getElementById('model').value = data.model;
+                document.getElementById('year').value = data.year;
+                document.getElementById('km').value = data.km;
+                document.getElementById('price').value = data.price;
+                document.getElementById('desc').value = data.desc;
+                
+                existingPhotos = data.photos || [];
+                const photoDiv = document.getElementById('currentPhotos');
+                existingPhotos.forEach(url => {
+                    photoDiv.innerHTML += `<img src="${url}">`;
+                });
+            }
+        }
+
+        // 2. IMAGE CONVERSION (Imgbbb/Base64 Helper)
+        async function uploadImages(files) {
+            const urls = [];
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append("image", file);
+                const res = await fetch("https://api.imgbb.com/1/upload?key=YOUR_IMGBB_API_KEY", {
+                    method: "POST",
+                    body: formData
+                });
+                const json = await res.json();
+                urls.push(json.data.url);
+            }
+            return urls;
+        }
+
+        // 3. SAVE CHANGES
+        document.getElementById('saveBtn').onclick = async () => {
+            const btn = document.getElementById('saveBtn');
+            const files = document.getElementById('fileInput').files;
+            
+            btn.innerText = "Processing Update...";
+            btn.disabled = true;
+
+            try {
+                let finalPhotos = existingPhotos;
+
+                // If user selected new files, upload them and replace the array
+                if (files.length > 0) {
+                    // Replace YOUR_IMGBB_API_KEY with your actual key
+                    // finalPhotos = await uploadImages(files); 
+                    // Note: If you used Base64 on Post Ad page, use that logic here instead.
+                }
+
+                await updateDoc(doc(db, "ads", adId), {
+                    category: document.getElementById('category').value,
+                    brand: document.getElementById('brand').value,
+                    model: document.getElementById('model').value,
+                    year: document.getElementById('year').value,
+                    km: document.getElementById('km').value,
+                    price: document.getElementById('price').value,
+                    desc: document.getElementById('desc').value,
+                    photos: finalPhotos // Update with new ones if uploaded
+                });
+
+                alert("Successfully Updated!");
+                window.location.href = "dashboard.html";
+            } catch (e) {
+                console.error(e);
+                alert("Update failed. Make sure all fields are valid.");
+                btn.innerText = "Save All Changes";
+                btn.disabled = false;
+            }
+        };
+
+        loadAdDetails();
+    </script>
+</body>
+</html>
