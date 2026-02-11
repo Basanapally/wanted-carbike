@@ -1,200 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard | Wanted CarBike</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;}
-header{background:#0a2540;color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;}
-header a{color:white;margin-left:15px;text-decoration:none;font-weight:bold;}
-.container{max-width:800px;margin:30px auto;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-button{padding:8px 12px;margin-top:10px;background:#0a2540;color:white;border:none;border-radius:5px;cursor:pointer;}
-button:hover{opacity:0.9;}
-input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:5px;border:1px solid #ccc;}
-h3{margin-top:20px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;margin-top:10px;}
-.card{border:1px solid #ccc;padding:10px;border-radius:8px;background:#fff;cursor:pointer;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | Wanted CarBike</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff4d4d; --dark: #121212; --card: #1e1e1e; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; }
+        nav { display: flex; justify-content: space-between; padding: 15px 50px; background: #000; align-items: center; border-bottom: 1px solid #333; }
+        .logo-img { height: 35px; border-radius: 5px; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        
+        .profile-card { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .status-badge { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .premium { background: #f1c40f; color: #000; }
+        .standard { background: #333; color: #ccc; }
+
+        .section-title { margin: 30px 0 20px; border-left: 4px solid var(--primary); padding-left: 15px; }
+        .ad-row { background: var(--card); margin-bottom: 12px; padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 20px; border: 1px solid #333; transition: 0.2s; }
+        .ad-row img { width: 70px; height: 50px; object-fit: cover; border-radius: 6px; }
+        .ad-info { flex-grow: 1; }
+        
+        .my-ad-tag { border: 1px solid var(--primary); background: rgba(255, 77, 77, 0.05); }
+        .owner-label { font-size: 0.7rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
+
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+        .btn-edit { background: #f1c40f; color: black; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.8rem; font-weight: 600; }
+        .btn-view { background: #333; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.8rem; }
+        
+        #loader { text-align: center; padding: 50px; color: var(--primary); }
+    </style>
 </head>
 <body>
 
-<header>
-  <div>Wanted CarBike - Dashboard</div>
-  <div><a href="index.html">Home</a><a href="#" onclick="logout()">Logout</a></div>
-</header>
+    <nav>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="wbc.jpg" class="logo-img">
+            <span style="font-weight:700;">WANTED CARBIKE</span>
+        </div>
+        <div>
+            <a href="index.html" style="color:white; text-decoration:none; margin-right:20px;">Browse Ads</a>
+            <button id="logoutBtn" style="background:none; border:1px solid #ff4d4d; color:#ff4d4d; padding:5px 15px; border-radius:20px; cursor:pointer;">Logout</button>
+        </div>
+    </nav>
 
-<div class="container" id="dashboardContainer">
-  <h2 id="welcome"></h2>
+    <div class="container">
+        <div class="profile-card">
+            <div>
+                <h1 id="userName" style="margin:0;">Checking...</h1>
+                <p id="userEmail" style="color:#888; margin:5px 0;"></p>
+                <div id="statusBadge"></div>
+            </div>
+            <a href="post-ad.html" style="background:var(--primary); color:white; text-decoration:none; padding:15px 25px; border-radius:12px; font-weight:bold;">+ Post New Ad</a>
+        </div>
 
-  <h3>Post New Ad</h3>
-  <div>
-    <select id="category">
-      <option value="">Select Category</option>
-      <option value="Car">Car</option>
-      <option value="Bike">Bike</option>
-    </select>
-    <input type="text" id="title" placeholder="Title">
-    <input type="text" id="makeModel" placeholder="Make / Model">
-    <input type="number" id="year" placeholder="Year">
-    <input type="number" id="kmDriven" placeholder="KM Driven">
-    <input type="number" id="price" placeholder="Price in ₹">
-    <input type="text" id="location" placeholder="Location">
-    <textarea id="description" placeholder="Description"></textarea>
-    <input type="file" id="photos" accept="image/*" multiple>
-    <button onclick="postAd()">Post Ad</button>
-  </div>
+        <h2 class="section-title">All Platform Listings</h2>
+        <div id="loader">Loading ads...</div>
+        <div id="allAdsContainer"></div>
+    </div>
 
-  <h3>My Ads</h3>
-  <div class="grid" id="myAdsGrid"></div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  <h3>Premium Membership</h3>
-  <div id="premiumSection"></div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+            authDomain: "wanted-carbike-62581.firebaseapp.com",
+            projectId: "wanted-carbike-62581",
+            storageBucket: "wanted-carbike-62581.firebasestorage.app",
+            messagingSenderId: "537372034018",
+            appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+        };
 
-  <h3>Delete Account</h3>
-  <button onclick="deleteAccount()" style="background:red;">Delete My Account</button>
-</div>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-<script>
-let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let ads = JSON.parse(localStorage.getItem("ads")) || [];
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
 
-if(!currentUser){
-  alert("Please login first!");
-  location.href="login.html";
-}
+            // 1. Load Profile
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                 const data = userDoc.data();
+                 document.getElementById('userName').innerText = data.fullName || "User";
+                 document.getElementById('userEmail').innerText = user.email;
+                 document.getElementById('statusBadge').innerHTML = data.isPremium ? 
+                    `<span class="status-badge premium">⭐ Premium</span>` : 
+                    `<span class="status-badge standard">Standard</span>`;
+            }
 
-// Auto-cancel premium if expired
-if(currentUser.premium && currentUser.premiumExpiry){
-  const now = new Date();
-  const expiry = new Date(currentUser.premiumExpiry);
-  if(now>expiry){
-    currentUser.premium = false;
-    delete currentUser.premiumExpiry;
-    users = users.map(u=>u.id===currentUser.id?currentUser:u);
-    localStorage.setItem("users",JSON.stringify(users));
-    localStorage.setItem("currentUser",JSON.stringify(currentUser));
-    alert("Premium expired!");
-  }
-}
+            // 2. Load Ads
+            renderAllAds(user.email);
+        });
 
-document.getElementById("welcome").innerText = `Welcome, ${currentUser.name}`;
+        async function renderAllAds(loggedInEmail) {
+            const container = document.getElementById('allAdsContainer');
+            const loader = document.getElementById('loader');
 
-// ----- POST NEW AD -----
-function postAd(){
-  const category = document.getElementById("category").value;
-  const title = document.getElementById("title").value;
-  const makeModel = document.getElementById("makeModel").value;
-  const year = document.getElementById("year").value;
-  const kmDriven = document.getElementById("kmDriven").value;
-  const price = document.getElementById("price").value;
-  const location = document.getElementById("location").value;
-  const description = document.getElementById("description").value;
-  const photosInput = document.getElementById("photos");
+            try {
+                const snap = await getDocs(collection(db, "ads"));
+                loader.style.display = 'none';
+                container.innerHTML = '';
 
-  if(!category||!title||!makeModel||!year||!kmDriven||!price||!location||!description){
-    alert("All fields required!");
-    return;
-  }
+                if (snap.empty) {
+                    container.innerHTML = "<p style='color:#666'>No ads available yet.</p>";
+                    return;
+                }
 
-  // Photo rules
-  let photos = [];
-  if(photosInput.files.length>0){
-    if(!currentUser.premium && photosInput.files.length>2){
-      alert("Normal users can upload max 2 photos. Upgrade to premium for unlimited.");
-      return;
-    }
-    for(let f of photosInput.files){
-      let reader = new FileReader();
-      reader.onload = function(e){
-        photos.push(e.target.result);
-        if(photos.length===photosInput.files.length){
-          saveAd();
+                snap.forEach((adDoc) => {
+                    const ad = adDoc.data();
+                    const isOwner = ad.sellerEmail === loggedInEmail;
+                    
+                    const row = document.createElement('div');
+                    row.className = `ad-row ${isOwner ? 'my-ad-tag' : ''}`;
+                    row.id = `row-${adDoc.id}`;
+
+                    row.innerHTML = `
+                        <img src="${ad.photos ? ad.photos[0] : 'wbc.jpg'}" onerror="this.src='wbc.jpg'">
+                        <div class="ad-info">
+                            <h4 style="margin:0;">
+                                ${ad.brand} ${ad.model} 
+                                ${isOwner ? '<span class="owner-label">YOUR AD</span>' : ''}
+                            </h4>
+                            <small style="color:#888;">Price: RS ${Number(ad.price).toLocaleString()}</small>
+                        </div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <a href="product-details.html?id=${adDoc.id}" class="btn-view">View</a>
+                            ${isOwner ? `
+                                <a href="edit-ad.html?id=${adDoc.id}" class="btn-edit">Edit</a>
+                                <button class="btn-delete" onclick="handleDelete('${adDoc.id}')">Delete</button>
+                            ` : ''}
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+
+            } catch (err) {
+                console.error(err);
+                loader.innerText = "Failed to load database.";
+            }
         }
-      }
-      reader.readAsDataURL(f);
-    }
-  } else {
-    alert("Upload at least one photo!");
-    return;
-  }
 
-  function saveAd(){
-    const newAd = {
-      id: Date.now(),
-      category,title,makeModel,year,kmDriven,price,location,description,
-      photos,
-      sellerId: currentUser.id,
-      sellerName: currentUser.name,
-      sellerPhone: currentUser.phone
-    };
-    ads.push(newAd);
-    localStorage.setItem("ads", JSON.stringify(ads));
-    alert("Ad posted successfully!");
-    renderMyAds();
-  }
-}
+        // Global Delete Function
+        window.handleDelete = async (id) => {
+            if (confirm("Delete your listing permanently? This cannot be undone.")) {
+                try {
+                    await deleteDoc(doc(db, "ads", id));
+                    document.getElementById(`row-${id}`).remove();
+                    alert("Ad removed successfully.");
+                } catch (e) {
+                    alert("Error deleting ad.");
+                }
+            }
+        };
 
-// ----- RENDER MY ADS -----
-function renderMyAds(){
-  const myAds = ads.filter(a=>a.sellerId===currentUser.id);
-  const container = document.getElementById("myAdsGrid");
-  container.innerHTML='';
-  if(myAds.length===0){
-    container.innerHTML="<p>No ads posted yet.</p>";
-    return;
-  }
-  myAds.forEach(a=>{
-    let card = document.createElement("div");
-    card.className="card";
-    card.innerHTML = `<h4>${a.title}</h4>
-                      <p>${a.category} | ₹${a.price}</p>
-                      <button onclick="deleteAd(${a.id})" style="background:red;">Delete</button>`;
-    container.appendChild(card);
-  });
-}
-renderMyAds();
-
-// DELETE AD
-function deleteAd(id){
-  if(confirm("Delete this ad?")){
-    ads = ads.filter(a=>a.id!==id);
-    localStorage.setItem("ads",JSON.stringify(ads));
-    renderMyAds();
-  }
-}
-
-// PREMIUM SECTION
-const premiumSec = document.getElementById("premiumSection");
-if(currentUser.premium){
-  premiumSec.innerHTML="<p>You are a Premium member. Unlimited photos and full seller contacts.</p>";
-} else {
-  premiumSec.innerHTML='<button onclick="goPremium()">Upgrade to Premium ₹99 / 28 days</button>';
-}
-function goPremium(){
-  window.location.href="premium.html";
-}
-
-// DELETE ACCOUNT
-function deleteAccount(){
-  if(confirm("Are you sure you want to delete your account permanently?")){
-    users = users.filter(u=>u.id!==currentUser.id);
-    localStorage.setItem("users",JSON.stringify(users));
-    // delete user ads
-    ads = ads.filter(a=>a.sellerId!==currentUser.id);
-    localStorage.setItem("ads",JSON.stringify(ads));
-    localStorage.removeItem("currentUser");
-    alert("Account deleted permanently!");
-    window.location.href="index.html";
-  }
-}
-
-// LOGOUT
-function logout(){
-  localStorage.removeItem("currentUser");
-  location.href="index.html";
-}
-</script>
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href = "index.html");
+    </script>
 </body>
 </html>
