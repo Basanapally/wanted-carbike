@@ -9,7 +9,7 @@
         :root { --primary: #ff4d4d; --dark: #121212; }
         body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark); color: white; }
         
-        /* Mobile Friendly Nav */
+        /* Nav */
         nav { 
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 15px; background: rgba(0,0,0,0.9); 
@@ -22,10 +22,18 @@
         .container { padding: 20px 15px; max-width: 1200px; margin: 0 auto; }
         h1 { font-size: 1.5rem; margin-bottom: 20px; color: white; }
 
-        /* Responsive Grid: 2 columns on mobile */
+        /* Ads Grid */
         .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         
-        .ad-card { background: #1e1e1e; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+        /* Clickable Wrapper */
+        .ad-link { text-decoration: none; color: inherit; display: block; }
+        
+        .ad-card { 
+            background: #1e1e1e; border-radius: 12px; overflow: hidden; 
+            border: 1px solid #333; transition: transform 0.2s, border-color 0.2s; 
+        }
+        .ad-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
         .ad-gallery { display: flex; overflow-x: auto; height: 140px; background: #000; scroll-snap-type: x mandatory; }
         .ad-gallery img { height: 100%; width: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
         .ad-gallery::-webkit-scrollbar { display: none; }
@@ -54,7 +62,7 @@
     </nav>
 
     <div class="container">
-        <h1> Verified Cars</h1>
+        <h1>Verified Cars</h1>
         <div class="ads-grid" id="carGrid">Loading cars...</div>
     </div>
 
@@ -62,6 +70,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
             authDomain: "wanted-carbike-62581.firebaseapp.com",
@@ -80,22 +89,34 @@
                 const q = query(collection(db, "ads"), where("category", "==", "Car"));
                 const snap = await getDocs(q);
                 grid.innerHTML = '';
-                if(snap.empty) { grid.innerHTML = "<p>No cars found.</p>"; return; }
+                
+                if(snap.empty) { 
+                    grid.innerHTML = "<p>No cars found.</p>"; 
+                    return; 
+                }
 
                 snap.forEach(doc => {
                     const data = doc.data();
+                    const adId = doc.id; // The ID for product-details.html?id=...
                     const photos = data.photos ? data.photos.map(url => `<img src="${url}">`).join('') : '<img src="https://via.placeholder.com/150">';
+                    
+                    // The Card is now wrapped in an 'ad-link' anchor tag
                     grid.innerHTML += `
-                        <div class="ad-card">
-                            <div class="ad-gallery">${photos}</div>
-                            <div class="ad-info">
-                                <div class="ad-price">RS ${data.price}</div>
-                                <h3>${data.brand} ${data.model}</h3>
-                                <p>${data.year} | ${data.km} KM</p>
+                        <a href="product-details.html?id=${adId}" class="ad-link">
+                            <div class="ad-card">
+                                <div class="ad-gallery">${photos}</div>
+                                <div class="ad-info">
+                                    <div class="ad-price">RS ${Number(data.price).toLocaleString()}</div>
+                                    <h3>${data.brand} ${data.model}</h3>
+                                    <p>${data.year} | ${data.km} KM</p>
+                                </div>
                             </div>
-                        </div>`;
+                        </a>`;
                 });
-            } catch (e) { console.error(e); grid.innerHTML = "<p>Error loading cars.</p>"; }
+            } catch (e) { 
+                console.error(e); 
+                grid.innerHTML = "<p>Error loading cars.</p>"; 
+            }
         }
         fetchCars();
     </script>
