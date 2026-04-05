@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Wanted CarBike | Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --primary: #ff4d4d; --dark: #121212; --glass: rgba(0,0,0,0.85); --gold: #ffd700; }
+
+body, html { margin:0; padding:0; font-family:'Poppins', sans-serif; background:var(--dark); color:white; overflow-x:hidden; }
+
+/* Navigation */
+nav { position: fixed; top:0; width:100%; height:70px; display:flex; justify-content:space-between; align-items:center; padding:0 12px; box-sizing:border-box; z-index:2000; background: var(--glass); backdrop-filter: blur(10px); border-bottom:1px solid rgba(255,255,255,0.1); }
+.brand { display:flex; align-items:center; gap:8px; text-decoration:none; color:white; }
+.logo-img { height:35px; border-radius:5px; }
+.brand-text { font-weight:700; font-size:0.9rem; }
+.nav-links { display:flex; align-items:center; gap:6px; }
+.nav-btn { text-decoration:none; color:white; font-weight:600; font-size:0.7rem; padding:7px 10px; border-radius:20px; border:1px solid white; transition:0.3s; white-space:nowrap; }
+.reg-btn { background: var(--primary); border-color: var(--primary); }
+.post-btn { background: #4dff88; border-color: #4dff88; color:#000; }
+.logout-btn { border-color: #888; color:#888; background:none; cursor:pointer; }
+
+/* Hero Section */
+.hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80'); background-size:cover; background-position:center; height:45vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-top:50px; }
+.hero h1 { font-size:1.6rem; margin-bottom:15px; }
+
+/* Category Grid */
+.category-container { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:90%; max-width:400px; }
+.cat-card { background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px; text-align:center; text-decoration:none; color:white; transition:0.3s; }
+.cat-card:active { background: var(--primary); transform: scale(0.95); }
+.cat-card span { display:block; font-weight:700; margin-top:5px; font-size:0.85rem; }
+
+/* Ads Grid */
+.ads-section { padding:20px 12px; }
+.ads-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px; }
+.ad-link { text-decoration:none; color:inherit; display:block; }
+.ad-card { background:#1e1e1e; border-radius:12px; overflow:hidden; border:1px solid #333; height:100%; display:flex; flex-direction:column; transition:0.2s; }
+.ad-card:active { transform: scale(0.98); }
+.ad-img { width:100%; height:120px; object-fit:cover; background:#222; }
+.ad-info { padding:10px; flex-grow:1; display:flex; flex-direction:column; }
+.ad-price { color: var(--primary); font-weight:700; font-size:1rem; }
+.ad-title { font-size:0.8rem; margin:4px 0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.view-details-tag { margin-top:auto; font-size:0.65rem; color:#888; border-top:1px solid #333; padding-top:8px; display:flex; justify-content:space-between; align-items:center; }
+.view-details-tag b { color: var(--primary); font-size:0.7rem; }
+
+/* Premium Modal */
+#premiumModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:3000; overflow:auto; padding:20px; text-align:center; }
+#premiumModal div { max-width:500px; margin:50px auto; background:#1e1e1e; border-radius:20px; padding:30px; color:white; position:relative; }
+#premiumModal span { position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.2rem; }
+.btn-pay { background:#25d366; color:white; border:none; padding:18px; border-radius:12px; font-weight:700; font-size:1.1rem; display:inline-block; text-decoration:none; margin-top:15px; }
+.btn-pay img { vertical-align:middle; margin-right:10px; }
+@media (min-width:768px){ nav{padding:0 40px;} .brand-text{font-size:1.2rem;} .nav-btn{font-size:0.85rem; padding:8px 18px;} .hero h1{font-size:2.8rem;} .ads-grid{grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:20px;} .ad-img{height:170px;} }
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="brand">
+        <img src="logowbc.jpg" class="logo-img">
+        <span class="brand-text">WANTED CARBIKE</span>
+    </a>
+    <div class="nav-links">
+        <div id="guestLinks" style="display:flex; gap:6px;">
+            <a href="login.html" class="nav-btn">Login</a>
+            <a href="register.html" class="nav-btn reg-btn">Register</a>
+        </div>
+        <div id="userLinks" style="display:none; gap:6px;">
+            <a href="post-ad.html" class="nav-btn post-btn">+ Post</a>
+            <a href="#" id="goPremiumBtn" class="nav-btn post-btn">Go Premium</a>
+            <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+        </div>
+    </div>
+</nav>
+
+<div class="hero">
+    <h1>Find Your Perfect Ride</h1>
+    <div class="category-container">
+        <a href="cars.html" class="cat-card"><span>CARS</span></a>
+        <a href="bikes.html" class="cat-card"><span>BIKES</span></a>
+    </div>
+</div>
+
+<div class="ads-section">
+    <h2 style="font-size:1.1rem; margin-bottom:15px; border-left:3px solid var(--primary); padding-left:10px;">LATEST LISTINGS</h2>
+    <div class="ads-grid" id="adsGrid">Loading latest ads...</div>
+</div>
+
+<!-- Premium Modal -->
+<div id="premiumModal">
+    <div>
+        <span id="closePremium">✖</span>
+        <h2 style="color:var(--primary);">Unlock Premium</h2>
+        <p style="color:#aaa;">Get direct access to sellers and post unlimited ads today.</p>
+        <div style="background:white; padding:15px; border-radius:15px; display:inline-block; margin:20px 0;">
+            <img src="QR.jpeg" alt="Payment QR" style="width:200px; height:200px; display:block;">
+        </div>
+        <p style="font-size:0.85rem; color:#aaa;">STEP 2: Send screenshot via WhatsApp for activation</p>
+        <a href="#" id="whatsappBtnModal" class="btn-pay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20">
+            SEND SCREENSHOT
+        </a>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+    authDomain: "wanted-carbike-62581.firebaseapp.com",
+    projectId: "wanted-carbike-62581",
+    storageBucket: "wanted-carbike-62581.firebasestorage.app",
+    messagingSenderId: "537372034018",
+    appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// UI Auth Logic
+onAuthStateChanged(auth, (user) => {
+    const guestLinks = document.getElementById('guestLinks');
+    const userLinks = document.getElementById('userLinks');
+    const goPremiumBtn = document.getElementById('goPremiumBtn');
+    const waBtnModal = document.getElementById('whatsappBtnModal');
+
+    if(user){
+        guestLinks.style.display = 'none';
+        userLinks.style.display = 'flex';
+
+        // Setup WhatsApp link
+        const myNumber = "+91 9701718181";
+        const message = encodeURIComponent(`Hi Wanted CarBike!\n\nI want to activate Premium.\nEmail: ${user.email}\n\n[Attached Screenshot]`);
+        waBtnModal.href = `https://wa.me/${myNumber}?text=${message}`;
+    } else {
+        guestLinks.style.display = 'flex';
+        userLinks.style.display = 'none';
+    }
+});
+
+// Logout
+window.logout = () => { signOut(auth).then(()=> window.location.reload()).catch((err)=> alert(err.message)); };
+
+// Load Ads
+async function fetchAds() {
+    const grid = document.getElementById('adsGrid');
+    try {
+        const q = query(collection(db,"ads"), orderBy("postedAt","desc"));
+        const snap = await getDocs(q);
+        grid.innerHTML = '';
+        if(snap.empty){
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">No vehicles posted yet.</p>'; 
+            return;
+        }
+        snap.forEach(doc => {
+            const data = doc.data();
+            const adId = doc.id;
+            const img = (data.photos && data.photos.length>0) ? data.photos[0] : 'https://via.placeholder.com/300?text=No+Image';
+            grid.innerHTML += `
+            <a href="product-details.html?id=${adId}" class="ad-link">
+                <div class="ad-card">
+                    <img src="${img}" class="ad-img" alt="Vehicle">
+                    <div class="ad-info">
+                        <div class="ad-price">RS ${data.price}</div>
+                        <div class="ad-title">${data.brand} ${data.model}</div>
+                        <div class="view-details-tag">
+                            <span>Click for Info</span>
+                            <b>VIEW DETAILS →</b>
+                        </div>
+                    </div>
+                </div>
+            </a>`;
+        });
+    } catch(e){
+        console.error(e);
+        grid.innerHTML = '<p>Check Firestore Rules or Indexing.</p>';
+    }
+}
+fetchAds();
+
+// Premium Modal Logic
+const goPremiumBtn = document.getElementById('goPremiumBtn');
+const premiumModal = document.getElementById('premiumModal');
+const closePremium = document.getElementById('closePremium');
+
+goPremiumBtn.addEventListener('click', ()=> premiumModal.style.display='block');
+closePremium.addEventListener('click', ()=> premiumModal.style.display='none');
+</script>
+
+</body>
+</html>

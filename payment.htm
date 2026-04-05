@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment</title>
+<style>
+body { font-family: 'Poppins', sans-serif; background: #121212; color: white; text-align:center; padding: 20px; }
+.qr-img { width: 200px; margin: 20px auto; display:block; }
+button { padding:10px 20px; margin-top:20px; background:#ff4d4d; color:white; border:none; border-radius:8px; cursor:pointer; }
+</style>
+</head>
+<body>
+<h2>Scan QR Code to Pay</h2>
+<img src="qr-placeholder.png" alt="QR Code" class="qr-img">
+<p>After payment, send us a screenshot to verify.</p>
+<input type="file" id="screenshot" accept="image/*">
+<button id="sendPayment">Send Payment Screenshot</button>
+
+<script type="module">
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDTl1dj4F-We96czvRrLEptlAWKM2n5ubk",
+    authDomain: "wanted-carbike-62581.firebaseapp.com",
+    projectId: "wanted-carbike-62581",
+    storageBucket: "wanted-carbike-62581.firebasestorage.app",
+    messagingSenderId: "537372034018",
+    appId: "1:537372034018:web:ffb3999335b29407dbafbb"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+document.getElementById('sendPayment').addEventListener('click', async () => {
+    const user = auth.currentUser;
+    if(!user) return alert('Login first!');
+    
+    const fileInput = document.getElementById('screenshot');
+    if(fileInput.files.length === 0) return alert('Please select a screenshot!');
+
+    const file = fileInput.files[0];
+    
+    // For simplicity, store screenshot in Firestore as Base64 (or you can use Firebase Storage)
+    const reader = new FileReader();
+    reader.onload = async () => {
+        const base64Img = reader.result;
+
+        await updateDoc(doc(db, 'users', user.uid), {
+            paymentScreenshot: base64Img,
+            premiumRequested: true,
+            premiumActive: false
+        });
+
+        alert('Screenshot sent! Admin will activate your account soon.');
+    };
+    reader.readAsDataURL(file);
+});
+</script>
+</body>
+</html>
